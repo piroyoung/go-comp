@@ -19,6 +19,8 @@ func main() {
 
 	r := gin.Default()
 
+	r.Static("/assets", "./assets")
+
 	r.GET("v1/completion", func(c *gin.Context) {
 		t, err := repo.Complete(c, c.Query("q"), 20)
 		if err != nil {
