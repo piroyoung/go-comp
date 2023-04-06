@@ -57,5 +57,7 @@ func cleanText(text string) string {
 	text = strings.ReplaceAll(text, "\t", "_")
 	re := regexp.MustCompile(`[\p{P}\p{S}]+`)
 	text = re.ReplaceAllString(text, " ")
+	text = strings.ReplaceAll(text, "  ", " ")
+	text = strings.TrimSpace(text)
 	return text
 }

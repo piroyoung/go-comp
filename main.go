@@ -33,20 +33,24 @@ func main() {
 		})
 	})
 
-	r.GET("v1/stream/:q", func(c *gin.Context) {
-		q := c.Param("q")
+	r.GET("v1/stream", func(c *gin.Context) {
+		p := c.Query("q")
+		msg := make(chan string)
+		go func() {
+			defer close(msg)
+			repo.Stream(c, p, 20, func(t string) error {
+				msg <- t
+				return nil
+			})
+		}()
 		c.Stream(func(w io.Writer) bool {
-			t, err := repo.Complete(c, q, 20)
-			if err != nil {
-				c.JSON(500, gin.H{
-					"error": err.Error(),
-				})
-				return false
+			if m, ok := <-msg; ok {
+				c.SSEvent("chunk", m)
+				return true
 			}
-			c.SSEvent("message", t)
-			return true
+			return false
 		})
-	})
 
+	})
 	r.Run()
 }
