@@ -47,7 +47,7 @@ func main() {
 		msg := make(chan string)
 		go func() {
 			defer close(msg)
-			repo.Stream(c, prompt.Value, 50, func(t string) error {
+			repo.Stream(c, prompt.Value, 100, func(t string) error {
 				msg <- t
 				return nil
 			})

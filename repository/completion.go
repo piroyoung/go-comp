@@ -15,8 +15,10 @@ func NewCompletionRepository(client *aoai.AzureOpenAI) *CompletionRepository {
 
 func (r *CompletionRepository) Complete(ctx context.Context, prompt string, m int) (string, error) {
 	request := aoai.CompletionRequest{
-		Prompts:   []string{prompt},
-		MaxTokens: m,
+		Prompts:     []string{prompt},
+		MaxTokens:   m,
+		TopP:        0.3,
+		Temperature: 0.1,
 	}
 
 	response, err := r.client.Completion(ctx, request)
