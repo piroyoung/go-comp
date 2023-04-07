@@ -7,6 +7,7 @@ import (
 	"github.com/piroyoung/go-comp/repository"
 	"io"
 	"os"
+	"time"
 )
 
 func main() {
@@ -22,19 +23,6 @@ func main() {
 
 	r.Static("/assets", "./assets")
 
-	r.GET("v1/completion", func(c *gin.Context) {
-		t, err := repo.Complete(c, c.Query("q"), 20)
-		if err != nil {
-			c.JSON(500, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(200, gin.H{
-			"text": t,
-		})
-	})
 	r.POST("v1/stream", func(c *gin.Context) {
 		var prompt Prompt
 		if err := c.BindJSON(&prompt); err != nil {
@@ -47,7 +35,8 @@ func main() {
 		msg := make(chan string)
 		go func() {
 			defer close(msg)
-			repo.Stream(c, prompt.Value, 100, func(t string) error {
+			repo.Stream(c, prompt.Value, 500, func(t string) error {
+				time.Sleep(10 * time.Millisecond)
 				msg <- t
 				return nil
 			})
