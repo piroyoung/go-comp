@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/piroyoung/go-aoai"
 	"github.com/piroyoung/go-comp/repository"
@@ -34,20 +35,30 @@ func main() {
 			"text": t,
 		})
 	})
+	r.POST("v1/stream", func(c *gin.Context) {
+		var prompt Prompt
+		if err := c.BindJSON(&prompt); err != nil {
+			c.JSON(500, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 
-	r.GET("v1/stream", func(c *gin.Context) {
-		p := c.Query("q")
 		msg := make(chan string)
 		go func() {
 			defer close(msg)
-			repo.Stream(c, p, 20, func(t string) error {
+			repo.Stream(c, prompt.Value, 50, func(t string) error {
 				msg <- t
 				return nil
 			})
 		}()
+		c.Header("Content-Type", "text/event-stream")
+		c.Header("Cache-Control", "no-cache")
+		c.Header("Connection", "keep-alive")
 		c.Stream(func(w io.Writer) bool {
 			if m, ok := <-msg; ok {
-				c.SSEvent("chunk", m)
+				jsonBytes, _ := json.Marshal(Token{Value: m})
+				c.SSEvent("chunk", string(jsonBytes))
 				return true
 			}
 			return false
@@ -56,3 +67,5 @@ func main() {
 	})
 	r.Run()
 }
+
+// １から１００までの素数を全て書き出す関数

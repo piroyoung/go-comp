@@ -3,8 +3,6 @@ package repository
 import (
 	"context"
 	"github.com/piroyoung/go-aoai"
-	"regexp"
-	"strings"
 )
 
 type CompletionRepository struct {
@@ -52,12 +50,12 @@ func (r *CompletionRepository) Stream(ctx context.Context, prompt string, m int,
 
 // replace all punctuation and special characters into space
 func cleanText(text string) string {
-	text = strings.ReplaceAll(text, "\n", "_")
-	text = strings.ReplaceAll(text, "\r", "_")
-	text = strings.ReplaceAll(text, "\t", "_")
-	re := regexp.MustCompile(`[\p{P}\p{S}]+`)
-	text = re.ReplaceAllString(text, " ")
-	text = strings.ReplaceAll(text, "  ", " ")
-	text = strings.TrimSpace(text)
+	//text = strings.ReplaceAll(text, "\n", " ")
+	//text = strings.ReplaceAll(text, "\r", "_")
+	//text = strings.ReplaceAll(text, "\t", "_")
+	//re := regexp.MustCompile(`[\p{P}\p{S}]+`)
+	//text = re.ReplaceAllString(text, " ")
+	//text = strings.ReplaceAll(text, "  ", " ")
+	//text = strings.TrimSpace(text)
 	return text
 }
