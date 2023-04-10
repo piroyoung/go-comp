@@ -1,24 +1,22 @@
 function completion(prompt) {
-
     let xhr = new XMLHttpRequest();
-    xhr.open('POST', '/v1/stream', true);
+    xhr.open('POST', '/v1/stream');
     xhr.setRequestHeader('Content-Type', 'application/json');
     let cursor = 0;
-    xhr.onreadystatechange = function () {
-        if (xhr.status === 200) {
-            let chunks = xhr.responseText.slice(cursor).split("event:chunk\ndata:");
-            for (let i = 1; i < chunks.length; i++) {
-                let chunk = chunks[i];
-                let completion = processChunk(chunk);
-                $("#completion").append(completion);
-            }
-            cursor = xhr.responseText.length - 1;
+    xhr.onreadystatechange = () => {
+        if (cursor < xhr.responseText.length) {
+            let diff = xhr.responseText.slice(cursor);
+            cursor = xhr.responseText.length;
+            diff.split('event:chunk\ndata:').forEach((chunk) => {
+                if (chunk.length > 0) {
+                    let value = processChunk(chunk);
+                    $("#completion").append(value);
+                }
+            });
         }
-    };
+    }
 
-    xhr.send(JSON.stringify({
-        "value": prompt
-    }));
+    xhr.send(JSON.stringify({value: prompt}));
 }
 
 function processChunk(chunk) {

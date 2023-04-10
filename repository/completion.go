@@ -17,8 +17,8 @@ func (r *CompletionRepository) Complete(ctx context.Context, prompt string, m in
 	request := aoai.CompletionRequest{
 		Prompts:     []string{prompt},
 		MaxTokens:   m,
-		TopP:        0.3,
-		Temperature: 0.1,
+		TopP:        0.2,
+		Temperature: 0.3,
 	}
 
 	response, err := r.client.Completion(ctx, request)

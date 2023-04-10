@@ -2,12 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/piroyoung/go-aoai"
 	"github.com/piroyoung/go-comp/repository"
 	"io"
 	"os"
-	"time"
 )
 
 func main() {
@@ -35,8 +35,7 @@ func main() {
 		msg := make(chan string)
 		go func() {
 			defer close(msg)
-			repo.Stream(c, prompt.Value, 500, func(t string) error {
-				time.Sleep(10 * time.Millisecond)
+			repo.Stream(c, prompt.Value, 200, func(t string) error {
 				msg <- t
 				return nil
 			})
@@ -46,6 +45,7 @@ func main() {
 		c.Header("Connection", "keep-alive")
 		c.Stream(func(w io.Writer) bool {
 			if m, ok := <-msg; ok {
+				fmt.Print(m)
 				jsonBytes, _ := json.Marshal(Token{Value: m})
 				c.SSEvent("chunk", string(jsonBytes))
 				return true
@@ -56,5 +56,3 @@ func main() {
 	})
 	r.Run()
 }
-
-// １から１００までの素数を全て書き出す関数
