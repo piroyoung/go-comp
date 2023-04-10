@@ -1,5 +1,12 @@
+.container {
+    min-width: 600px;
+}
 
-#outer {
+#prompt {
+    margin: 0;
+}
+
+#bottom {
     background: #000000;
     color: white;
     font-weight: bold;
